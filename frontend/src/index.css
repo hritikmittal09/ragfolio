@@ -4,6 +4,27 @@
 
 @layer base {
   html {
-    @apply bg-zinc-950 text-zinc-100 antialiased;
+    @apply text-zinc-100 antialiased;
+    background-color: #09090b;
+    background-image: radial-gradient(circle at 50% 0%, #18181b 0%, #09090b 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-zinc-800 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-zinc-700;
   }
 }
