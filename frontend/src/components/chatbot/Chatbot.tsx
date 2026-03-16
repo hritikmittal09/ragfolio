@@ -31,7 +31,7 @@ export function Chatbot() {
     setLoading(true)
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : '')
       const response = await fetch(`${apiBaseUrl}/ask`, {
         method: 'POST',
         headers: {

@@ -8,7 +8,8 @@ export function BackendStatus() {
   useEffect(() => {
     const check = async () => {
       try {
-        const res = await fetch('/api/health')
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : '')
+        const res = await fetch(`${apiBaseUrl}/health`)
         setAlive(res.ok)
       } catch {
         setAlive(false)
@@ -25,9 +26,8 @@ export function BackendStatus() {
       title={alive === true ? 'Backend alive' : alive === false ? 'Backend offline' : 'Checking…'}
     >
       <span
-        className={`h-2 w-2 rounded-full shrink-0 ${
-          alive === true ? 'bg-emerald-500' : alive === false ? 'bg-red-500' : 'bg-zinc-500 animate-pulse'
-        }`}
+        className={`h-2 w-2 rounded-full shrink-0 ${alive === true ? 'bg-emerald-500' : alive === false ? 'bg-red-500' : 'bg-zinc-500 animate-pulse'
+          }`}
         aria-hidden
       />
       <span className="text-xs text-zinc-400 sr-only sm:not-sr-only">
