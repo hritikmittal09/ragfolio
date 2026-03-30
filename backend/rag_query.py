@@ -7,11 +7,30 @@ from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
 
+
 BASE_DIR = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 ENV_PATH = os.path.join(PROJECT_ROOT, ".env")
 if os.path.exists(ENV_PATH):
+    print(f"Loading .env file from: {ENV_PATH}")
+    # Remove BOM if present in .env file
+    with open(ENV_PATH, 'r', encoding='utf-8-sig') as env_file:
+        content = env_file.read()
+    with open(ENV_PATH, 'w', encoding='utf-8') as env_file:
+        env_file.write(content)
     load_dotenv(ENV_PATH)
+else:
+    print(".env file not found at expected path.")
+    load_dotenv()
+    Api_key = os.getenv("GEMINI_API_KEY")
+
+# Debugging: Read .env file content directly
+with open(ENV_PATH, 'r') as env_file:
+    print(".env file content:")
+    print(env_file.read())
+
+# Debugging: Check if GEMINI_API_KEY is loaded correctly
+print(f"Loaded GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
 
 # Must match rag/ingest.py (lightweight ONNX model)
 EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
