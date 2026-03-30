@@ -55,7 +55,8 @@ _chroma_collection = None
 def _get_embedding_model() -> TextEmbedding:
     global _embedding_model
     if _embedding_model is None:
-        _embedding_model = TextEmbedding(model_name=EMBEDDING_MODEL_NAME)
+        # Explicitly set the device to CPU to avoid GPU-related issues in environments without GPU support
+        _embedding_model = TextEmbedding(model_name=EMBEDDING_MODEL_NAME, device="cpu")
     return _embedding_model
 
 
