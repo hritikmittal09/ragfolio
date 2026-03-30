@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 from fastembed import TextEmbedding
 
 
-
 BASE_DIR = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
 ENV_PATH = os.path.join(PROJECT_ROOT, ".env")
+
 if os.path.exists(ENV_PATH):
     print(f"Loading .env file from: {ENV_PATH}")
     # Remove BOM if present in .env file
@@ -20,17 +20,8 @@ if os.path.exists(ENV_PATH):
         env_file.write(content)
     load_dotenv(ENV_PATH)
 else:
-    print(".env file not found at expected path.")
-    load_dotenv()
-    Api_key = os.getenv("GEMINI_API_KEY")
-
-# Debugging: Read .env file content directly
-with open(ENV_PATH, 'r') as env_file:
-    print(".env file content:")
-    print(env_file.read())
-
-# Debugging: Check if GEMINI_API_KEY is loaded correctly
-print(f"Loaded GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
+    print(".env file not found — loading env vars from system environment (e.g. Render).")
+    load_dotenv()  # no-op if no .env, but env vars set in Render will already be available
 
 # Must match rag/ingest.py (lightweight ONNX model)
 EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
@@ -55,7 +46,6 @@ _chroma_collection = None
 def _get_embedding_model() -> TextEmbedding:
     global _embedding_model
     if _embedding_model is None:
-        # Explicitly set the device to CPU to avoid GPU-related issues in environments without GPU support
         _embedding_model = TextEmbedding(model_name=EMBEDDING_MODEL_NAME, device="cpu")
     return _embedding_model
 
@@ -65,7 +55,7 @@ def _get_chroma_collection():
     if _chroma_collection is None:
         from chromadb.config import Settings
         client = chromadb.PersistentClient(
-            path=CHROMA_DB_DIR, 
+            path=CHROMA_DB_DIR,
             settings=Settings(anonymized_telemetry=False)
         )
         _chroma_collection = client.get_or_create_collection(name=COLLECTION_NAME)
@@ -130,9 +120,6 @@ def call_gemini(prompt: str) -> str:
             }
         ]
     }
-
-    print("--- GEMINI INPUT (prompt sent to API) ---")
-    print("--- END GEMINI INPUT ---")
 
     response = requests.post(GEMINI_API_URL, headers=headers, json=body, timeout=30)
     response.raise_for_status()
